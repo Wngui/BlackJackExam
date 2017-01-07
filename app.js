@@ -266,5 +266,6 @@ io.on('connection', function (client) {
     });
 });
 
-server.listen(13337);
-log.info('Server listening on localhost:13337');
+var port = process.env.PORT;
+server.listen(port);
+log.info('Server listening on localhost:'+port);
