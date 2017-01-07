@@ -38,6 +38,8 @@
 
         var socket = io.connect(location.protocol+"//"+location.hostname+":" + port + "/");
 
+        var name = "";
+
 
         socket.on('updateTableState', function (boardState) {
             //Handle Board State
@@ -147,7 +149,9 @@
         function joinTable() {
             $('#join').hide();
             $('#leave').show();
-            var name = prompt("Enter your nickname");
+            if(name == ""){
+                name = prompt("Enter your nickname");
+            }
             socket.emit('joinTable', name);
         }
 
@@ -214,15 +218,14 @@
     </style>
 </head>
 <body>
-<script>
-    (function(d, s, id){
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) {return;}
-        js = d.createElement(s); js.id = id;
-        js.src = "//connect.facebook.net/en_US/sdk.js";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=1640300629605648";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
 
 <script>
     // This is called with the results from from FB.getLoginStatus().
@@ -235,16 +238,14 @@
         // for FB.getLoginStatus().
         if (response.status === 'connected') {
             // Logged into your app and Facebook.
-            testAPI();
+            fbIntegration();
         } else if (response.status === 'not_authorized') {
             // The person is logged into Facebook, but not your app.
-            document.getElementById('status').innerHTML = 'Please log ' +
-                'into this app.';
+            $("#fb-welcome").hide();
         } else {
+            $("#fb-welcome").hide();
             // The person is not logged into Facebook, so we're not sure if
             // they are logged into this app or not.
-            document.getElementById('status').innerHTML = 'Please log ' +
-                'into Facebook.';
         }
     }
 
@@ -295,12 +296,13 @@
 
     // Here we run a very simple test of the Graph API after login is
     // successful.  See statusChangeCallback() for when this call is made.
-    function testAPI() {
+    function fbIntegration() {
         console.log('Welcome!  Fetching your information.... ');
         FB.api('/me', function(response) {
             console.log('Successful login for: ' + response.name);
-            document.getElementById('status').innerHTML =
-                'Thanks for logging in, ' + response.name + '!';
+            name = respone.first_name;
+            $("#fb-name").html(name);
+            $("#fb-welcome").show();
         });
     }
 </script>
@@ -320,8 +322,8 @@
 <button id="join" onclick="joinTable()">Join</button>
 <button id="leave" onclick="leaveTable()">Leave</button>
 <br/>
-<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-</fb:login-button>
+<span id="fb-welcome" style="color:white;font-weight: bold;">Welcome, <span id="fb-name" style="color:darkblue;font-weight: bold"></span></span>
+<div id="fb-login" class="fb-login-button" data-max-rows="1" data-size="medium" data-show-faces="false" data-auto-logout-link="true"></div>
 
 <div style="margin-left:-100px;">
     <div style="text-align: center">
