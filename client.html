@@ -300,7 +300,7 @@
         console.log('Welcome!  Fetching your information.... ');
         FB.api('/me', function(response) {
             console.log('Successful login for: ' + response.name);
-            name = respone.name;
+            name = response.name;
             name = name.split(" ")[0];
             $("#fb-name").html(name);
             $("#fb-welcome").show();
