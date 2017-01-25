@@ -10,6 +10,21 @@ var _ = require('lodash');
 var log = new Logger('hazardhulen');
 log.pushHandler(new ConsoleLogHandler());
 
+var entityMap = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': '&quot;',
+    "'": '&#39;',
+    "/": '&#x2F;'
+};
+
+function escapeHtml(string) {
+    return String(string).replace(/[&<>"'\/]/g, function (s) {
+        return entityMap[s];
+    });
+}
+
 function table() {
     this.deck = _.shuffle(_.range(1, 52)),
         this.turnHolder = 0,
@@ -162,7 +177,7 @@ io.on('connection', function (client) {
     client.on('joinTable', function (nickname) {
         var id = client.conn.id;
         player = new Player(id);
-        player.nickname = nickname;
+        player.nickname = escapeHtml(nickname);
         table.activePlayers.push(player);
         updateTableState();
         log.notice(player.id + " has joined the table.");
